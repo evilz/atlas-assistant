@@ -1,0 +1,135 @@
+@page "/chat"
+@using Atlas.Core
+@rendermode InteractiveServer
+@inject AtlasOrchestrator Orchestrator
+@inject ILogger<Chat> Logger
+
+<PageTitle>Chat - ATLAS Assistant</PageTitle>
+
+<div class="container-fluid h-100 d-flex flex-column">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">ATLAS Chat Interface</h1>
+        </div>
+    </div>
+
+    <div class="row flex-grow-1">
+        <div class="col-md-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5>LLM Providers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        @foreach (var provider in Orchestrator.GetAvailableProviders())
+                        {
+                            <button class="list-group-item list-group-item-action @(selectedProvider == provider ? "active" : "")"
+                                    @onclick="() => SelectProvider(provider)">
+                                @provider
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="card h-100 d-flex flex-column">
+                <div class="card-header">
+                    <h5>Conversation</h5>
+                </div>
+                <div class="card-body flex-grow-1 overflow-auto" style="max-height: 60vh;">
+                    @foreach (var msg in messages)
+                    {
+                        <div class="mb-3 @(msg.IsUser ? "text-end" : "text-start")">
+                            <div class="d-inline-block p-3 rounded @(msg.IsUser ? "bg-primary text-white" : "bg-light")">
+                                <strong>@(msg.IsUser ? "You" : selectedProvider ?? "ATLAS"):</strong>
+                                <div>@msg.Content</div>
+                            </div>
+                        </div>
+                    }
+                    @if (isProcessing)
+                    {
+                        <div class="mb-3 text-start">
+                            <div class="d-inline-block p-3 rounded bg-light">
+                                <div class="spinner-border spinner-border-sm" role="status">
+                                    <span class="visually-hidden">Processing...</span>
+                                </div>
+                                <span class="ms-2">Processing...</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Type your message..."
+                               @bind="currentMessage" @onkeyup="HandleKeyPress" disabled="@isProcessing" />
+                        <button class="btn btn-primary" @onclick="SendMessage" disabled="@isProcessing">
+                            Send
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private readonly List<ChatMessage> messages = new();
+    private string currentMessage = string.Empty;
+    private string? selectedProvider;
+    private bool isProcessing;
+
+    private class ChatMessage
+    {
+        public string Content { get; set; } = string.Empty;
+        public bool IsUser { get; set; }
+    }
+
+    protected override void OnInitialized()
+    {
+        selectedProvider = Orchestrator.GetAvailableProviders().FirstOrDefault();
+    }
+
+    private void SelectProvider(string provider)
+    {
+        selectedProvider = provider;
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !isProcessing && !string.IsNullOrWhiteSpace(currentMessage))
+        {
+            await SendMessage();
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(currentMessage) || isProcessing)
+            return;
+
+        var userMessage = currentMessage;
+        currentMessage = string.Empty;
+
+        messages.Add(new ChatMessage { Content = userMessage, IsUser = true });
+        isProcessing = true;
+        StateHasChanged();
+
+        try
+        {
+            var response = await Orchestrator.ProcessMessageAsync(userMessage, selectedProvider);
+            messages.Add(new ChatMessage { Content = response, IsUser = false });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error processing message");
+            messages.Add(new ChatMessage { Content = $"Error: {ex.Message}", IsUser = false });
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
+}
