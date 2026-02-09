@@ -5,93 +5,83 @@
 
 <PageTitle>Dashboard - ATLAS Assistant</PageTitle>
 
-<h1 class="mb-4">ATLAS Dashboard</h1>
+<h1 class="text-2xl font-semibold mb-6">ATLAS Dashboard</h1>
 
-<div class="row">
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Available LLM Providers</h5>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <LumexCard>
+        <LumexCardBody>
+            <div class="text-center">
+                <p class="text-3xl font-bold text-primary">@Orchestrator.GetAvailableProviders().Count()</p>
+                <p class="text-default-500">Active Providers</p>
             </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    @foreach (var provider in Orchestrator.GetAvailableProviders())
-                    {
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            @provider
-                            <span class="badge bg-success rounded-pill">Active</span>
-                        </li>
-                    }
-                </ul>
+        </LumexCardBody>
+    </LumexCard>
+    <LumexCard>
+        <LumexCardBody>
+            <div class="text-center">
+                <p class="text-3xl font-bold text-success">@Orchestrator.GetAvailableSkills().Count()</p>
+                <p class="text-default-500">Available Skills</p>
             </div>
-        </div>
-    </div>
-
-    <div class="col-md-6 mb-4">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h5 class="mb-0">Available Skills</h5>
+        </LumexCardBody>
+    </LumexCard>
+    <LumexCard>
+        <LumexCardBody>
+            <div class="text-center">
+                <p class="text-3xl font-bold text-secondary">Running</p>
+                <p class="text-default-500">System Status</p>
             </div>
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    @foreach (var skill in Orchestrator.GetAvailableSkills())
-                    {
-                        <li class="list-group-item">
-                            @skill
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </div>
+        </LumexCardBody>
+    </LumexCard>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0">System Status</h5>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <LumexCard>
+        <LumexCardHeader>
+            <p class="text-lg font-semibold">LLM Providers</p>
+        </LumexCardHeader>
+        <LumexDivider />
+        <LumexCardBody>
+            <div class="space-y-2">
+                @foreach (var provider in Orchestrator.GetAvailableProviders())
+                {
+                    <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-default-50">
+                        <span>@provider</span>
+                        <LumexChip Color="ThemeColor.Success" Size="Size.Small">Active</LumexChip>
+                    </div>
+                }
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="text-center p-3 border rounded">
-                            <h3 class="text-primary">@Orchestrator.GetAvailableProviders().Count()</h3>
-                            <p class="mb-0">Active Providers</p>
-                        </div>
+        </LumexCardBody>
+    </LumexCard>
+
+    <LumexCard>
+        <LumexCardHeader>
+            <p class="text-lg font-semibold">Available Skills</p>
+        </LumexCardHeader>
+        <LumexDivider />
+        <LumexCardBody>
+            <div class="space-y-2">
+                @foreach (var skill in Orchestrator.GetAvailableSkills())
+                {
+                    <div class="py-2 px-3 rounded-lg bg-default-50">
+                        @skill
                     </div>
-                    <div class="col-md-4">
-                        <div class="text-center p-3 border rounded">
-                            <h3 class="text-success">@Orchestrator.GetAvailableSkills().Count()</h3>
-                            <p class="mb-0">Available Skills</p>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="text-center p-3 border rounded">
-                            <h3 class="text-info">Running</h3>
-                            <p class="mb-0">System Status</p>
-                        </div>
-                    </div>
-                </div>
+                }
             </div>
-        </div>
-    </div>
+        </LumexCardBody>
+    </LumexCard>
 </div>
 
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-warning">
-                <h5 class="mb-0">Quick Actions</h5>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-2 d-md-flex">
-                    <a href="/chat" class="btn btn-primary">Start Chat</a>
-                    <button class="btn btn-secondary">View Logs</button>
-                    <button class="btn btn-info">Configure Providers</button>
-                    <button class="btn btn-success">Manage Skills</button>
-                </div>
-            </div>
+<LumexCard>
+    <LumexCardHeader>
+        <p class="text-lg font-semibold">Quick Actions</p>
+    </LumexCardHeader>
+    <LumexDivider />
+    <LumexCardBody>
+        <div class="flex flex-wrap gap-2">
+            <LumexLink Href="/"><LumexButton Color="ThemeColor.Primary">Start Chat</LumexButton></LumexLink>
+            <LumexButton Color="ThemeColor.Default" Variant="Variant.Outlined">View Logs</LumexButton>
+            <LumexButton Color="ThemeColor.Secondary" Variant="Variant.Outlined">Configure Providers</LumexButton>
+            <LumexButton Color="ThemeColor.Success" Variant="Variant.Outlined">Manage Skills</LumexButton>
         </div>
-    </div>
-</div>
+    </LumexCardBody>
+</LumexCard>

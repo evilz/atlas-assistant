@@ -4,11 +4,19 @@
     <ProjectReference Include="..\Atlas.Core\Atlas.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="LumexUI" Version="2.2.0" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
+
+  <Target Name="BuildTailwindCSS" BeforeTargets="Build" DependsOnTargets="CopyContents">
+    <Exec Command="npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/app.build.css --minify" WorkingDirectory="$(ProjectDir)" />
+  </Target>
 
 </Project>
