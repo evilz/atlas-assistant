@@ -46,9 +46,15 @@ public class AtlasOrchestrator
 
         if (provider == null)
         {
-            // Find first available provider using explicit Where
-            var availableProviders = _llmProviders.Where(p => p.IsAvailableAsync(cancellationToken).Result);
-            provider = availableProviders.FirstOrDefault();
+            // Find first available provider
+            foreach (var p in _llmProviders)
+            {
+                if (await p.IsAvailableAsync(cancellationToken))
+                {
+                    provider = p;
+                    break;
+                }
+            }
         }
 
         if (provider == null)
@@ -86,9 +92,15 @@ public class AtlasOrchestrator
 
         if (provider == null)
         {
-            // Use explicit Where to find available providers
-            var availableProviders = _messagingProviders.Where(p => p.IsAvailableAsync(cancellationToken).Result);
-            provider = availableProviders.FirstOrDefault();
+            // Find first available messaging provider
+            foreach (var p in _messagingProviders)
+            {
+                if (await p.IsAvailableAsync(cancellationToken))
+                {
+                    provider = p;
+                    break;
+                }
+            }
         }
 
         if (provider != null)
