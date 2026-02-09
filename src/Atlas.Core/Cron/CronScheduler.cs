@@ -9,11 +9,17 @@ public class CronScheduler
     private readonly IScheduler _scheduler;
     private readonly ILogger<CronScheduler> _logger;
 
-    public CronScheduler(ILogger<CronScheduler> logger)
+    private CronScheduler(IScheduler scheduler, ILogger<CronScheduler> logger)
     {
+        _scheduler = scheduler;
         _logger = logger;
+    }
+
+    public static async Task<CronScheduler> CreateAsync(ILogger<CronScheduler> logger)
+    {
         var factory = new StdSchedulerFactory();
-        _scheduler = factory.GetScheduler().Result;
+        var scheduler = await factory.GetScheduler();
+        return new CronScheduler(scheduler, logger);
     }
 
     public async Task StartAsync(CancellationToken cancellationToken = default)

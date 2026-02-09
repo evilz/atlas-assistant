@@ -12,22 +12,29 @@ public class FileOperationsSkillTests
         var skill = new FileOperationsSkill(NullLogger<FileOperationsSkill>.Instance);
         var testFile = Path.GetTempFileName();
         var testContent = "Test content";
-        await File.WriteAllTextAsync(testFile, testContent);
-
-        var parameters = new Dictionary<string, object>
+        
+        try
         {
-            ["operation"] = "read",
-            ["path"] = testFile
-        };
+            await File.WriteAllTextAsync(testFile, testContent);
 
-        // Act
-        var result = await skill.ExecuteAsync(parameters);
+            var parameters = new Dictionary<string, object>
+            {
+                ["operation"] = "read",
+                ["path"] = testFile
+            };
 
-        // Assert
-        Assert.Contains(testContent, result);
+            // Act
+            var result = await skill.ExecuteAsync(parameters);
 
-        // Cleanup
-        File.Delete(testFile);
+            // Assert
+            Assert.Contains(testContent, result);
+        }
+        finally
+        {
+            // Cleanup
+            if (File.Exists(testFile))
+                File.Delete(testFile);
+        }
     }
 
     [Fact]
@@ -38,23 +45,29 @@ public class FileOperationsSkillTests
         var testFile = Path.GetTempFileName();
         var testContent = "Written content";
 
-        var parameters = new Dictionary<string, object>
+        try
         {
-            ["operation"] = "write",
-            ["path"] = testFile,
-            ["content"] = testContent
-        };
+            var parameters = new Dictionary<string, object>
+            {
+                ["operation"] = "write",
+                ["path"] = testFile,
+                ["content"] = testContent
+            };
 
-        // Act
-        var result = await skill.ExecuteAsync(parameters);
+            // Act
+            var result = await skill.ExecuteAsync(parameters);
 
-        // Assert
-        Assert.Contains("successfully", result);
-        var fileContent = await File.ReadAllTextAsync(testFile);
-        Assert.Equal(testContent, fileContent);
-
-        // Cleanup
-        File.Delete(testFile);
+            // Assert
+            Assert.Contains("successfully", result);
+            var fileContent = await File.ReadAllTextAsync(testFile);
+            Assert.Equal(testContent, fileContent);
+        }
+        finally
+        {
+            // Cleanup
+            if (File.Exists(testFile))
+                File.Delete(testFile);
+        }
     }
 
     [Fact]
@@ -63,24 +76,31 @@ public class FileOperationsSkillTests
         // Arrange
         var skill = new FileOperationsSkill(NullLogger<FileOperationsSkill>.Instance);
         var testDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        Directory.CreateDirectory(testDir);
-        var testFile = Path.Combine(testDir, "test.txt");
-        await File.WriteAllTextAsync(testFile, "content");
-
-        var parameters = new Dictionary<string, object>
+        
+        try
         {
-            ["operation"] = "list",
-            ["path"] = testDir
-        };
+            Directory.CreateDirectory(testDir);
+            var testFile = Path.Combine(testDir, "test.txt");
+            await File.WriteAllTextAsync(testFile, "content");
 
-        // Act
-        var result = await skill.ExecuteAsync(parameters);
+            var parameters = new Dictionary<string, object>
+            {
+                ["operation"] = "list",
+                ["path"] = testDir
+            };
 
-        // Assert
-        Assert.Contains("test.txt", result);
+            // Act
+            var result = await skill.ExecuteAsync(parameters);
 
-        // Cleanup
-        Directory.Delete(testDir, true);
+            // Assert
+            Assert.Contains("test.txt", result);
+        }
+        finally
+        {
+            // Cleanup
+            if (Directory.Exists(testDir))
+                Directory.Delete(testDir, true);
+        }
     }
 
     [Fact]

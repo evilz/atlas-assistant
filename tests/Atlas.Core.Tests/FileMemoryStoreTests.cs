@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Atlas.Core.Tests;
 
-public class FileMemoryStoreTests
+public class FileMemoryStoreTests : IDisposable
 {
     private readonly string _testPath;
 
@@ -11,6 +11,14 @@ public class FileMemoryStoreTests
     {
         _testPath = Path.Combine(Path.GetTempPath(), "atlas-tests", Guid.NewGuid().ToString());
         Directory.CreateDirectory(_testPath);
+    }
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_testPath))
+        {
+            Directory.Delete(_testPath, true);
+        }
     }
 
     [Fact]

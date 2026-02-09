@@ -85,7 +85,14 @@ public class AtlasOrchestrator
 
         if (provider == null)
         {
-            provider = _messagingProviders.FirstOrDefault(p => p.IsAvailableAsync(cancellationToken).Result);
+            foreach (var p in _messagingProviders)
+            {
+                if (await p.IsAvailableAsync(cancellationToken))
+                {
+                    provider = p;
+                    break;
+                }
+            }
         }
 
         if (provider != null)

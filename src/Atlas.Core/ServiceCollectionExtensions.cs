@@ -32,8 +32,12 @@ public static class ServiceCollectionExtensions
         // Register Orchestrator
         services.AddSingleton<AtlasOrchestrator>();
 
-        // Register Cron Scheduler
-        services.AddSingleton<CronScheduler>();
+        // Register Cron Scheduler with async factory
+        services.AddSingleton(sp =>
+        {
+            var logger = sp.GetRequiredService<Microsoft.Extensions.Logging.ILogger<CronScheduler>>();
+            return CronScheduler.CreateAsync(logger).GetAwaiter().GetResult();
+        });
 
         return services;
     }
