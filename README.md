@@ -1,4 +1,5 @@
-# ATLAS Assistant
+# ATLAS 🧠⚙️  
+Autonomous Task, Learning & Agent System
 
 ATLAS is an ultra-lightweight personal AI assistant built on .NET 10. It orchestrates multiple AI CLIs (Claude, Gemini, Copilot, Codex) through a unified CLI wrapper, supports messaging via Telegram & WhatsApp, and provides tools, skills, custom agents, cron tasks, and persistent memory — enabling automated, agent-driven workflows for developers and power users.
 
