@@ -35,19 +35,20 @@ public class AtlasOrchestrator
         if (!string.IsNullOrEmpty(preferredProvider))
         {
             provider = _llmProviders.FirstOrDefault(p => p.Name.Equals(preferredProvider, StringComparison.OrdinalIgnoreCase));
+            
+            // Check if preferred provider is actually available
+            if (provider != null && !await provider.IsAvailableAsync(cancellationToken))
+            {
+                _logger.LogWarning("Preferred provider {Provider} is not available, falling back to auto-selection", preferredProvider);
+                provider = null;
+            }
         }
 
         if (provider == null)
         {
-            // Find first available provider
-            foreach (var p in _llmProviders)
-            {
-                if (await p.IsAvailableAsync(cancellationToken))
-                {
-                    provider = p;
-                    break;
-                }
-            }
+            // Find first available provider using explicit Where
+            var availableProviders = _llmProviders.Where(p => p.IsAvailableAsync(cancellationToken).Result);
+            provider = availableProviders.FirstOrDefault();
         }
 
         if (provider == null)
@@ -85,14 +86,9 @@ public class AtlasOrchestrator
 
         if (provider == null)
         {
-            foreach (var p in _messagingProviders)
-            {
-                if (await p.IsAvailableAsync(cancellationToken))
-                {
-                    provider = p;
-                    break;
-                }
-            }
+            // Use explicit Where to find available providers
+            var availableProviders = _messagingProviders.Where(p => p.IsAvailableAsync(cancellationToken).Result);
+            provider = availableProviders.FirstOrDefault();
         }
 
         if (provider != null)

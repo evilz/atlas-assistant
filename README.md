@@ -83,7 +83,7 @@ dotnet run --project src/Atlas.CLI "Your message here"
 
 ### Web UI
 
-Navigate to `https://localhost:5001` after running the web project.
+Navigate to `https://localhost:7234` (or `http://localhost:5230`) after running the web project.
 
 ## Configuration
 

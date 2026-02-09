@@ -237,7 +237,7 @@ Run:
 dotnet run --project src/Atlas.Web
 ```
 
-Navigate to `https://localhost:5001`
+Navigate to `https://localhost:7234`
 
 ## Code Style
 

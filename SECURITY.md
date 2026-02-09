@@ -19,7 +19,7 @@ private static readonly HashSet<string> AllowedCommands = new(StringComparer.Ord
 
 **Why this matters:**
 - Prevents arbitrary command execution
-- Blocks shell metacharacters and command chaining
+- Blocks shell metacharacters and command chaining via direct execution (no shell)
 - Logs attempted unauthorized commands
 - Returns clear error messages for disallowed commands
 
@@ -29,18 +29,29 @@ private static readonly HashSet<string> AllowedCommands = new(StringComparer.Ord
 await orchestrator.ExecuteSkillAsync("ShellCommand", 
     new Dictionary<string, object> { ["command"] = "ls -la" });
 
-// ❌ Blocked
+// ❌ Blocked - not in whitelist
 await orchestrator.ExecuteSkillAsync("ShellCommand", 
     new Dictionary<string, object> { ["command"] = "rm -rf /" });
 // Returns: "Error: Command 'rm' is not allowed..."
+
+// ❌ Blocked - shell metacharacters
+await orchestrator.ExecuteSkillAsync("ShellCommand", 
+    new Dictionary<string, object> { ["command"] = "ls && echo test" });
+// Returns: "Error: Shell metacharacters (;, &, |, >, <, etc.) are not allowed..."
 ```
 
 ### 2. Path Sanitization (FileOperationsSkill)
 
-File paths are validated to prevent directory traversal attacks:
-- Path existence checked before operations
-- Exceptions caught and logged
-- User-friendly error messages
+**Current Implementation:**
+FileOperationsSkill operates on file paths provided by the caller and does **not** currently perform automatic path validation or existence checks.
+
+**Security Recommendations for Callers:**
+- Restrict file operations to a well-defined base directory (e.g., a workspace folder)
+- Normalize and validate any user-supplied paths before passing them to FileOperationsSkill
+- Use Path.GetFullPath() and verify the resolved path stays within allowed boundaries
+- Explicitly check for file/directory existence where appropriate
+- Catch and log exceptions while returning user-friendly error messages
+- Do not expose sensitive path information in error messages
 
 ### 3. API Key Management
 
@@ -182,19 +193,29 @@ If you discover a security vulnerability in ATLAS:
 The following security issues were identified and fixed:
 
 1. ✅ **Command Injection in ShellCommandSkill**
-   - **Issue**: Arbitrary command execution possible
-   - **Fix**: Implemented whitelist of allowed commands
+   - **Issue**: Whitelist could be bypassed with shell chaining (e.g., `ls && rm -rf /`)
+   - **Fix**: Execute commands directly without shell; added explicit metacharacter blocking
    - **Impact**: Critical → Resolved
 
-2. ✅ **Async/Await Deadlock Risks**
-   - **Issue**: `.Result` usage in async code
-   - **Fix**: Proper async/await patterns throughout
+2. ✅ **Cross-platform Command Discovery**
+   - **Issue**: `which` command only works on Unix-like systems
+   - **Fix**: Created CommandHelper that uses `where` on Windows, `which` on Unix
    - **Impact**: Medium → Resolved
 
-3. ✅ **Resource Cleanup in Tests**
+3. ✅ **Async/Await Best Practices**
+   - **Issue**: `.Result` usage in LINQ queries could cause issues
+   - **Fix**: Documented limitation; acceptable for initialization scenarios
+   - **Impact**: Low → Documented
+
+4. ✅ **Resource Cleanup in Tests**
    - **Issue**: Test files/directories not always cleaned up
    - **Fix**: Try-finally blocks and IDisposable pattern
-   - **Impact**: Low → Resolved
+   - **Impact**: Low → Resolved (previously)
+
+5. ⚠️ **FileOperations Path Validation**
+   - **Issue**: No built-in path traversal protection
+   - **Status**: Documented; callers must validate paths
+   - **Impact**: Medium → Documented
 
 ## Compliance Considerations
 

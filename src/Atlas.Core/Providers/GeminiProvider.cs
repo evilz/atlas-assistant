@@ -37,18 +37,6 @@ public class GeminiProvider : ILlmProvider
 
     public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken = default)
     {
-        try
-        {
-            var result = await Cli.Wrap("which")
-                .WithArguments("gemini")
-                .WithValidation(CommandResultValidation.None)
-                .ExecuteBufferedAsync(cancellationToken);
-            
-            return result.ExitCode == 0;
-        }
-        catch
-        {
-            return false;
-        }
+        return await CommandHelper.IsCommandAvailableAsync("gemini", cancellationToken);
     }
 }

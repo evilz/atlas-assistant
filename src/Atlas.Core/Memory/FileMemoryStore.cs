@@ -1,6 +1,5 @@
 using Atlas.Core.Abstractions;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace Atlas.Core.Memory;
 

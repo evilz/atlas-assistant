@@ -75,7 +75,7 @@
 </div>
 
 @code {
-    private List<ChatMessage> messages = new();
+    private readonly List<ChatMessage> messages = new();
     private string currentMessage = string.Empty;
     private string? selectedProvider;
     private bool isProcessing;

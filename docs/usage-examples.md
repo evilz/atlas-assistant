@@ -53,7 +53,7 @@ dotnet run --project src/Atlas.CLI "Explain how async/await works in C#"
 dotnet run --project src/Atlas.Web
 ```
 
-Navigate to `https://localhost:5001` in your browser.
+Navigate to `https://localhost:7234` in your browser.
 
 ### Available Pages
 

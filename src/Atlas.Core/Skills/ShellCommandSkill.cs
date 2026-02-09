@@ -30,7 +30,7 @@ public class ShellCommandSkill : ISkill
 
         var commandLine = commandObj.ToString()!;
         
-        // Extract the command (first word)
+        // Extract the command and arguments
         var commandParts = commandLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (commandParts.Length == 0)
             return "Error: command cannot be empty";
@@ -44,10 +44,24 @@ public class ShellCommandSkill : ISkill
             return $"Error: Command '{command}' is not allowed. Allowed commands: {string.Join(", ", AllowedCommands)}";
         }
 
+        // Security: Check for shell metacharacters that could enable chaining
+        var shellMetaChars = new[] { ";", "&", "|", ">", "<", "`", "$", "(", ")", "{", "}", "[", "]", "\\", "\n", "\r" };
+        if (shellMetaChars.Any(meta => commandLine.Contains(meta)))
+        {
+            _logger.LogWarning("Attempted to use shell metacharacters in command: {Command}", commandLine);
+            return "Error: Shell metacharacters (;, &, |, >, <, etc.) are not allowed for security reasons.";
+        }
+
         try
         {
-            var result = await Cli.Wrap("/bin/bash")
-                .WithArguments(new[] { "-c", commandLine })
+            // Execute command directly without shell to prevent command injection
+            // Get arguments (everything after the command)
+            var args = commandParts.Length > 1 
+                ? commandParts.Skip(1).ToArray() 
+                : Array.Empty<string>();
+
+            var result = await Cli.Wrap(command)
+                .WithArguments(args)
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync(cancellationToken);
 
