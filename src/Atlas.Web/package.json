@@ -1,0 +1,17 @@
+{
+  "name": "atlas.web",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i wwwroot/app.css -o wwwroot/app.build.css --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18"
+  },
+  "dependencies": {
+    "tailwindcss": "^4.1.18"
+  }
+}

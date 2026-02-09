@@ -52,3 +52,13 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Generated Tailwind CSS
+**/wwwroot/app.build.css
+
+# Generated LumexUI theme files
+**/bin/lumexui/

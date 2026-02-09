@@ -1,5 +1,6 @@
 using Atlas.Core;
 using Atlas.Web.Components;
+using LumexUI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,9 @@ builder.Services.AddRazorComponents()
 
 // Add Atlas Core services
 builder.Services.AddAtlasCore();
+
+// Add LumexUI services
+builder.Services.AddLumexServices();
 
 var app = builder.Build();
 
