@@ -24,8 +24,8 @@ public class CopilotProvider : ILlmProvider
     {
         try
         {
-            var result = await CliWrap.Cli.Wrap("gh")
-                .WithArguments(new[] { "copilot", "suggest", message })
+            var result = await CliWrap.Cli.Wrap("github-copilot")
+                .WithArguments(new[] { "suggest", message })
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync(cancellationToken);
 
@@ -46,6 +46,6 @@ public class CopilotProvider : ILlmProvider
             return false;
         }
         
-        return await CommandHelper.IsCommandAvailableAsync("gh", cancellationToken);
+        return await CommandHelper.IsCommandAvailableAsync("github-copilot", cancellationToken);
     }
 }

@@ -36,7 +36,7 @@ public class ClaudeInstaller : IProviderInstaller
         {
             _logger.LogInformation("Installing Claude CLI via npm...");
             var result = await CliWrap.Cli.Wrap("npm")
-                .WithArguments("install -g @anthropic-ai/claude-cli")
+                .WithArguments("install -g @anthropic-ai/claude-code")
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
 
