@@ -1,3 +1,4 @@
+using System.Text;
 using Atlas.Core.Abstractions;
 using Atlas.Core.Models;
 using CliWrap;
@@ -21,12 +22,21 @@ public class CodexProvider : ILlmProvider
     {
         try
         {
+
+            
             var result = await Cli.Wrap("codex")
-                .WithArguments(message)
+                .WithArguments(["exec","--json", message])
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync(cancellationToken);
 
-            return result.StandardOutput;
+            // Access stdout & stderr buffered in-memory as strings
+            if (result.StandardError.Contains("status 401 Unauthorized"))
+            {
+                var r2 = await Cli.Wrap("codex")
+                    .WithArguments(["login","--device-auth"])
+                   .ExecuteBufferedAsync(cancellationToken);
+            }
+            return result.StandardOutput;;
         }
         catch (Exception ex)
         {

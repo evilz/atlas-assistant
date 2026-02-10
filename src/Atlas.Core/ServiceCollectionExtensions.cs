@@ -4,6 +4,7 @@ using Atlas.Core.Memory;
 using Atlas.Core.Messaging;
 using Atlas.Core.Providers;
 using Atlas.Core.Skills;
+using Atlas.Core.Installers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Atlas.Core;
@@ -13,10 +14,20 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAtlasCore(this IServiceCollection services)
     {
         // Register LLM Providers
+        services.AddSingleton<ILlmProvider, CodexProvider>();
         services.AddSingleton<ILlmProvider, ClaudeProvider>();
         services.AddSingleton<ILlmProvider, GeminiProvider>();
         services.AddSingleton<ILlmProvider, CopilotProvider>();
-        services.AddSingleton<ILlmProvider, CodexProvider>();
+
+        // Register Provider Installers
+        services.AddSingleton<IProviderInstaller, GeminiInstaller>();
+        services.AddSingleton<IProviderInstaller, ClaudeInstaller>();
+        services.AddSingleton<IProviderInstaller, CopilotInstaller>();
+        services.AddSingleton<IProviderInstaller, CodexInstaller>();
+
+        // Register Installer Factory
+        services.AddSingleton<ProviderInstallerFactory>();
+
 
         // Register Messaging Providers
         services.AddSingleton<IMessagingProvider, TelegramProvider>();
