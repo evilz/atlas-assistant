@@ -21,7 +21,7 @@ public class CopilotInstaller : IProviderInstaller
 
     public async Task<bool> IsInstalledAsync()
     {
-        return await CommandHelper.IsCommandAvailableAsync("gh");
+        return await CommandHelper.IsCommandAvailableAsync("github-copilot");
     }
 
     public async Task<bool> InstallAsync()
@@ -61,7 +61,7 @@ public class CopilotInstaller : IProviderInstaller
 
         try
         {
-            var result = await CliWrap.Cli.Wrap("gh")
+            var result = await CliWrap.Cli.Wrap("github-copilot")
                 .WithArguments("auth status")
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
@@ -78,15 +78,13 @@ public class CopilotInstaller : IProviderInstaller
     {
         try
         {
-            _logger.LogInformation("Launching GitHub authentication...");
-            // Use 'gh auth login' which is interactive
+            _logger.LogInformation("Launching GitHub Copilot authentication...");
+            // Use 'github-copilot auth login' which is interactive
             // Since we are in a CLI app, we should ideally let the process inherit standard input/output
-            // But CliWrap default ExecuteAsync might not be fully interactive bridging.
-            // However, 'gh' often requires web browser flow.
             
            var process = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
            {
-               FileName = "gh",
+               FileName = "github-copilot",
                Arguments = "auth login",
                UseShellExecute = false
            });
