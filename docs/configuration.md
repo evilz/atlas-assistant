@@ -38,8 +38,8 @@ Configure which LLM providers to use and their settings:
    - Command: `gemini`
 
 3. **GitHub Copilot** - GitHub Copilot CLI
-   - Requires: `gh` CLI tool with Copilot extension
-   - Command: `gh copilot`
+   - Requires: `@github/copilot` npm package
+   - Command: `github-copilot`
 
 4. **Codex** - OpenAI Codex via CLI
    - Requires: `codex` CLI tool
