@@ -35,7 +35,7 @@ public class GeminiInstaller : IProviderInstaller
         try
         {
             _logger.LogInformation("Installing Gemini CLI via npm...");
-            var result = await Cli.Wrap("npm")
+            var result = await CliWrap.Cli.Wrap("npm")
                 .WithArguments("install -g @google/gemini-cli")
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();

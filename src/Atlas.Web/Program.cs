@@ -1,6 +1,9 @@
 using Atlas.Core;
+using Atlas.Core.Cli;
+using Atlas.Core.Configuration;
 using Atlas.Web.Components;
 using LumexUI.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,25 @@ builder.Services.AddAtlasCore();
 builder.Services.AddLumexServices();
 
 var app = builder.Build();
+
+// Load Configuration
+var configService = app.Services.GetRequiredService<ConfigurationService>();
+await configService.LoadAsync();
+
+// Check for CLI args
+if (args.Contains("--setup") || args.Contains("--onboard"))
+{
+    var wizard = app.Services.GetRequiredService<SetupWizard>();
+    await wizard.RunAsync();
+    return;
+}
+
+if (args.Contains("--cli"))
+{
+    var cliService = app.Services.GetRequiredService<CliService>();
+    await cliService.RunInteractiveModeAsync();
+    return;
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

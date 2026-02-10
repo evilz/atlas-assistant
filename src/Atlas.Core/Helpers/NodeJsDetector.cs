@@ -17,7 +17,7 @@ public class NodeJsDetector
     {
         try
         {
-            var result = await Cli.Wrap("node")
+            var result = await CliWrap.Cli.Wrap("node")
                 .WithArguments("--version")
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();

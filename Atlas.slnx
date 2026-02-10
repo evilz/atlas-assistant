@@ -1,6 +1,6 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/Atlas.CLI/Atlas.CLI.csproj" />
+
     <Project Path="src/Atlas.Core/Atlas.Core.csproj" />
     <Project Path="src/Atlas.Web/Atlas.Web.csproj" />
   </Folder>

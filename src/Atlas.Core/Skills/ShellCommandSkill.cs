@@ -60,7 +60,7 @@ public class ShellCommandSkill : ISkill
                 ? commandParts.Skip(1).ToArray() 
                 : Array.Empty<string>();
 
-            var result = await Cli.Wrap(command)
+            var result = await CliWrap.Cli.Wrap(command)
                 .WithArguments(args)
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync(cancellationToken);

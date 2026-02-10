@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddAtlasCore(this IServiceCollection services)
     {
+        // Register Configuration Service
+        services.AddSingleton<Configuration.ConfigurationService>();
         // Register LLM Providers
         services.AddSingleton<ILlmProvider, CodexProvider>();
         services.AddSingleton<ILlmProvider, ClaudeProvider>();
@@ -27,6 +29,10 @@ public static class ServiceCollectionExtensions
 
         // Register Installer Factory
         services.AddSingleton<ProviderInstallerFactory>();
+        
+        // Register CLI Helpers
+        services.AddTransient<Cli.SetupWizard>();
+        services.AddTransient<Cli.CliService>();
 
 
         // Register Messaging Providers

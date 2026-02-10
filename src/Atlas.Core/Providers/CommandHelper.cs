@@ -15,7 +15,7 @@ internal static class CommandHelper
             // Use 'where' on Windows, 'which' on Unix-like systems
             var checkCommand = OperatingSystem.IsWindows() ? "where" : "which";
             
-            var result = await Cli.Wrap(checkCommand)
+            var result = await CliWrap.Cli.Wrap(checkCommand)
                 .WithArguments(commandName)
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync(cancellationToken);

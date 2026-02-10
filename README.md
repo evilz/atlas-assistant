@@ -25,12 +25,12 @@ ATLAS is an ultra-lightweight personal AI assistant built on .NET 10. It orchest
 
 ## Project Structure
 
+
 ```
 atlas-assistant/
 ├── src/
 │   ├── Atlas.Core/          # Core library with LLM providers, skills, memory
-│   ├── Atlas.CLI/           # Command-line interface
-│   └── Atlas.Web/           # Blazor web application
+│   └── Atlas.Web/           # Unified Web application and CLI entry point
 └── tests/                   # Test projects
 ```
 
@@ -58,9 +58,9 @@ cd atlas-assistant
 dotnet build
 ```
 
-3. Run the CLI:
+3. Run the Setup Wizard:
 ```bash
-dotnet run --project src/Atlas.CLI
+dotnet run --project src/Atlas.Web -- --setup
 ```
 
 4. Run the Web UI:
@@ -74,12 +74,7 @@ dotnet run --project src/Atlas.Web
 
 Interactive mode:
 ```bash
-dotnet run --project src/Atlas.CLI
-```
-
-Single command:
-```bash
-dotnet run --project src/Atlas.CLI "Your message here"
+dotnet run --project src/Atlas.Web -- --cli
 ```
 
 ### Web UI

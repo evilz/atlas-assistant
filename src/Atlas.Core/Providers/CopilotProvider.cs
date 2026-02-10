@@ -1,4 +1,5 @@
 using Atlas.Core.Abstractions;
+using Atlas.Core.Configuration;
 using Atlas.Core.Models;
 using CliWrap;
 using CliWrap.Buffered;
@@ -9,19 +10,21 @@ namespace Atlas.Core.Providers;
 public class CopilotProvider : ILlmProvider
 {
     private readonly ILogger<CopilotProvider> _logger;
+    private readonly ConfigurationService _configService;
 
     public string Name => "Copilot";
 
-    public CopilotProvider(ILogger<CopilotProvider> logger)
+    public CopilotProvider(ILogger<CopilotProvider> logger, ConfigurationService configService)
     {
         _logger = logger;
+        _configService = configService;
     }
 
     public async Task<string> SendMessageAsync(string message, ConversationContext? context = null, CancellationToken cancellationToken = default)
     {
         try
         {
-            var result = await Cli.Wrap("gh")
+            var result = await CliWrap.Cli.Wrap("gh")
                 .WithArguments(new[] { "copilot", "suggest", message })
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync(cancellationToken);
@@ -37,6 +40,12 @@ public class CopilotProvider : ILlmProvider
 
     public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken = default)
     {
+        // Check if enabled in config
+        if (_configService.CurrentConfig.Providers.TryGetValue(Name, out var config) && !config.Enabled)
+        {
+            return false;
+        }
+        
         return await CommandHelper.IsCommandAvailableAsync("gh", cancellationToken);
     }
 }

@@ -35,7 +35,7 @@ public class ClaudeInstaller : IProviderInstaller
         try
         {
             _logger.LogInformation("Installing Claude CLI via npm...");
-            var result = await Cli.Wrap("npm")
+            var result = await CliWrap.Cli.Wrap("npm")
                 .WithArguments("install -g @anthropic-ai/claude-cli")
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
@@ -74,7 +74,7 @@ public class ClaudeInstaller : IProviderInstaller
         try 
         {
             // Claude CLI often has a login command
-            await Cli.Wrap("claude")
+            await CliWrap.Cli.Wrap("claude")
                 .WithArguments("login")
                 .WithStandardInputPipe(PipeSource.Null) // Ensure it doesn't hang waiting for input if not interactive in this context
                 // But this is running in CLI, so we want it to be interactive? 

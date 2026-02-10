@@ -1,23 +1,32 @@
 
-using Atlas.Core.Installers;
 using Atlas.Core.Abstractions;
+using Atlas.Core.Configuration;
+using Atlas.Core.Installers;
 using Microsoft.Extensions.Logging;
 
-namespace Atlas.CLI;
+namespace Atlas.Core.Cli;
 
-public class ProviderWizard
+public class SetupWizard
 {
     private readonly ProviderInstallerFactory _installerFactory;
-    private readonly ILogger<ProviderWizard> _logger;
+    private readonly ConfigurationService _configService;
+    private readonly ILogger<SetupWizard> _logger;
 
-    public ProviderWizard(ProviderInstallerFactory installerFactory, ILogger<ProviderWizard> logger)
+    public SetupWizard(
+        ProviderInstallerFactory installerFactory, 
+        ConfigurationService configService,
+        ILogger<SetupWizard> logger)
     {
         _installerFactory = installerFactory;
+        _configService = configService;
         _logger = logger;
     }
 
     public async Task RunAsync()
     {
+        // Ensure config is loaded
+        await _configService.LoadAsync();
+
         Console.WriteLine("\n=================================================");
         Console.WriteLine("   ATLAS AI Provider Setup Wizard");
         Console.WriteLine("=================================================\n");
@@ -32,8 +41,9 @@ public class ProviderWizard
             {
                 var installer = installers[i];
                 var installed = await installer.IsInstalledAsync();
+                
+                // Check config state
                 string status = "[Not Installed]";
-
                 if (installed)
                 {
                     if (await installer.IsAuthenticatedAsync())
@@ -44,6 +54,12 @@ public class ProviderWizard
                     {
                         status = "[Installed]";
                     }
+                }
+                
+                // Check if enabled in our local config
+                if (_configService.CurrentConfig.Providers.TryGetValue(installer.ProviderName, out var pConfig) && pConfig.Enabled)
+                {
+                    status += " (Configured)";
                 }
                 
                 Console.WriteLine($"{i + 1}. {installer.ProviderName} {status}");
@@ -69,7 +85,9 @@ public class ProviderWizard
             }
         }
 
-        Console.WriteLine("\nSetup complete! You can run this wizard again anytime.");
+        Console.WriteLine("\nSetup complete! Saving configuration...");
+        await _configService.SaveAsync();
+        Console.WriteLine("Configuration saved.");
     }
 
     private async Task ProcessProviderAsync(IProviderInstaller installer)
@@ -116,6 +134,14 @@ public class ProviderWizard
             if (response?.Trim().ToLower() == "y")
             {
                 await installer.AuthenticateAsync();
+                
+                // Update our configuration to mark it as enabled
+                if (!_configService.CurrentConfig.Providers.ContainsKey(installer.ProviderName))
+                {
+                    _configService.CurrentConfig.Providers[installer.ProviderName] = new ProviderConfig();
+                }
+                _configService.CurrentConfig.Providers[installer.ProviderName].Enabled = true;
+                Console.WriteLine($"Marked {installer.ProviderName} as enabled in configuration.");
             }
         }
     }

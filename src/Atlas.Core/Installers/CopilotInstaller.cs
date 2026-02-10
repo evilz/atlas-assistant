@@ -35,7 +35,7 @@ public class CopilotInstaller : IProviderInstaller
          try
         {
             _logger.LogInformation("Installing GitHub Copilot CLI extension via npm...");
-             var result = await Cli.Wrap("npm")
+             var result = await CliWrap.Cli.Wrap("npm")
                 .WithArguments("install -g @github/copilot")
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
@@ -61,7 +61,7 @@ public class CopilotInstaller : IProviderInstaller
 
         try
         {
-            var result = await Cli.Wrap("gh")
+            var result = await CliWrap.Cli.Wrap("gh")
                 .WithArguments("auth status")
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();

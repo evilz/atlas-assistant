@@ -35,7 +35,7 @@ public class CodexInstaller : IProviderInstaller
         try
         {
             _logger.LogInformation("Installing Codex CLI via npm...");
-            var result = await Cli.Wrap("npm")
+            var result = await CliWrap.Cli.Wrap("npm")
                 .WithArguments("install -g codex-cli")
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
@@ -78,7 +78,7 @@ public class CodexInstaller : IProviderInstaller
         {
              _logger.LogInformation("Launching Codex authentication...");
              // Based on CodexProvider implementation: codex login --device-auth
-            var result = await Cli.Wrap("codex")
+            var result = await CliWrap.Cli.Wrap("codex")
                 .WithArguments("login --device-auth")
                 .WithValidation(CommandResultValidation.None)
                 .ExecuteBufferedAsync();
