@@ -33,6 +33,7 @@ public static class ServiceCollectionExtensions
         // Register CLI Helpers
         services.AddTransient<Cli.SetupWizard>();
         services.AddTransient<Cli.CliService>();
+        services.AddTransient<Cli.TerminalGuiService>();
 
 
         // Register Messaging Providers
