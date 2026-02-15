@@ -5,6 +5,7 @@ ATLAS is an ultra-lightweight personal AI assistant built on .NET 10. It orchest
 
 ## Features
 
+- **Modern Terminal UI**: VS Code-inspired CLI interface powered by Terminal.Gui
 - **Multi-LLM Support**: Unified interface for Claude, Gemini, GitHub Copilot, and Codex
 - **CLI Wrapper**: Uses CLIwrap to orchestrate different AI CLI tools
 - **Messaging Integration**: Telegram and WhatsApp support for notifications
@@ -17,6 +18,7 @@ ATLAS is an ultra-lightweight personal AI assistant built on .NET 10. It orchest
 ## Tech Stack
 
 - **.NET 10**: Latest .NET platform
+- **Terminal.Gui**: Modern TUI framework for VS Code-like CLI interface
 - **CLIwrap**: Command-line interface wrapper for AI tools
 - **Minimal APIs**: Lightweight HTTP APIs
 - **Blazor**: Modern web UI framework
@@ -72,9 +74,25 @@ dotnet run --project src/Atlas.Web
 
 ### CLI Mode
 
-Interactive mode:
+ATLAS now features a modern Terminal.Gui interface inspired by VS Code!
+
+**Terminal.Gui Mode (Default):**
 ```bash
 dotnet run --project src/Atlas.Web -- --cli
+```
+
+Features:
+- **VS Code-like Interface**: Menu bar, sidebar explorer, and main chat area
+- **Explorer Sidebar**: Browse available LLM providers and skills
+- **Interactive Chat**: Type messages in the input field and press Enter
+- **Keyboard Shortcuts**:
+  - `F9`: Access menu bar
+  - `Ctrl+Q`: Quit application
+  - `Tab`: Navigate between panels
+
+**Simple Console Mode (Fallback):**
+```bash
+dotnet run --project src/Atlas.Web -- --cli-simple
 ```
 
 ### Web UI
