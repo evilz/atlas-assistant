@@ -33,6 +33,15 @@ if (args.Contains("--setup") || args.Contains("--onboard"))
 
 if (args.Contains("--cli"))
 {
+    // Use Terminal.Gui for modern CLI interface
+    var terminalGuiService = app.Services.GetRequiredService<TerminalGuiService>();
+    terminalGuiService.Run();
+    return;
+}
+
+if (args.Contains("--cli-simple"))
+{
+    // Fallback to simple CLI if needed
     var cliService = app.Services.GetRequiredService<CliService>();
     await cliService.RunInteractiveModeAsync();
     return;
